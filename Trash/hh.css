@@ -1,0 +1,13 @@
+.row-container {
+    display: flex;
+    align-items: center; /* vertical alignment */
+  }
+  
+  .row-container img {
+    align-self: center; /* vertical alignment */
+  }
+  
+  .row-container p {
+    text-align: center; /* horizontal alignment */
+  }
+  
