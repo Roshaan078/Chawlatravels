@@ -1,35 +1,66 @@
 <?php
-// Disable error reporting on live
-error_reporting(0);
-ini_set('display_errors', 0);
+// Display errors (for debugging — disable on live server)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-// Get data from form
-$name    = isset($_POST['name']) ? trim($_POST['name']) : '';
-$email   = isset($_POST['email']) ? trim($_POST['email']) : '';
-$subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
-$phone   = isset($_POST['Phone']) ? trim($_POST['Phone']) : '';
-$message = isset($_POST['message']) ? trim($_POST['message']) : '';
+// Import PHPMailer classes into the global namespace
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-if (!empty($email)) {
-    $to = "roshaan@suretrust.com.pk"; // ✅ Change to your real working email
-    $email_subject = "Mail From Website: " . $subject;
+// Load PHPMailer files
+require 'PHPMailer/PHPMailer.php';
+require 'PHPMailer/SMTP.php';
+require 'PHPMailer/Exception.php';
 
-    // Email body
-    $txt = "Name: $name\r\n";
-    $txt .= "Email: $email\r\n";
-    $txt .= "Phone: $phone\r\n";
-    $txt .= "Message:\r\n$message";
+// Create PHPMailer instance
+$mail = new PHPMailer(true);
+
+try {
+    // Collect form data safely
+    $name    = $_POST['name'] ?? '';
+    $email   = $_POST['email'] ?? '';
+    $subject = $_POST['subject'] ?? 'Website Contact';
+    $phone   = $_POST['Phone'] ?? '';
+    $message = $_POST['message'] ?? '';
+
+    // Validate required fields
+    if (empty($email) || empty($message)) {
+        throw new Exception("Email and message are required.");
+    }
+
+    // SMTP Configuration (Zoho)
+    $mail->isSMTP();
+    $mail->Host       = 'smtp.zoho.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = 'hamza@chawlatravels.pk';       // Your Zoho email
+    $mail->Password   = 'YOUR_APP_PASSWORD';            // Replace with your app password
+    $mail->SMTPSecure = 'ssl';                          // Use 'tls' if you use port 587
+    $mail->Port       = 465;                            // Or 587 if using TLS
 
     // Email headers
-    $headers = "From: contact@chawlatravels.pk\r\n";
-    $headers .= "Reply-To: $email\r\n";
-    $headers .= "X-Mailer: PHP/" . phpversion();
+    $mail->setFrom('hamza@chawlatravels.pk', 'Chawla Travels Contact Form');
+    $mail->addAddress('hamza@chawlatravels.pk');        // Recipient address (can add more)
+    $mail->addReplyTo($email, $name);                   // So you can reply to user directly
 
-    // Send the email
-    mail($to, $email_subject, $txt, $headers);
+    // Content
+    $mail->isHTML(false);
+    $mail->Subject = "New message from website: $subject";
+    $mail->Body    =
+        "Name: $name\n" .
+        "Email: $email\n" .
+        "Phone: $phone\n\n" .
+        "Message:\n$message";
+
+    // Send email
+    $mail->send();
+
+    // Redirect on success
+    header('Location: thankyou.html');
+    exit();
+} catch (Exception $e) {
+    // Show error message
+    echo "<h3 style='color:red;'>Mail Error: {$mail->ErrorInfo}</h3>";
+    // Optional: log to file
+    file_put_contents('mail_error_log.txt', date('Y-m-d H:i:s') . " - Error: {$mail->ErrorInfo}\n", FILE_APPEND);
 }
-
-// Redirect to thank you page
-header("Location: /thankyou.html");
-exit();
 ?>
