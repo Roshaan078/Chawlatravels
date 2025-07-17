@@ -1,31 +1,35 @@
 <?php
+// Disable error reporting on live
+error_reporting(0);
+ini_set('display_errors', 0);
+
 // Get data from form
-$name = $_POST['name'];
-$email = $_POST['email'];
-$subject = $_POST['subject'];
-$phone = $_POST['Phone'];
-$message = $_POST['message'];
+$name    = isset($_POST['name']) ? trim($_POST['name']) : '';
+$email   = isset($_POST['email']) ? trim($_POST['email']) : '';
+$subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
+$phone   = isset($_POST['Phone']) ? trim($_POST['Phone']) : '';
+$message = isset($_POST['message']) ? trim($_POST['message']) : '';
 
-$to = "roshaan@suretrust.com.pk"; // ✅ fixed double .com
-$email_subject = "Mail From Website: " . $subject;
-
-// Email body text
-$txt = "Name: $name\r\n";
-$txt .= "Email: $email\r\n";
-$txt .= "Phone: $phone\r\n";
-$txt .= "Message:\r\n$message";
-
-// Email headers
-$headers = "From: noreply@yoursite.com" . "\r\n" .
-           "Reply-To: $email" . "\r\n" .
-           "X-Mailer: PHP/" . phpversion();
-
-// Send email only if email is not null
 if (!empty($email)) {
+    $to = "roshaan@suretrust.com.pk"; // ✅ make sure this is correct
+    $email_subject = "Mail From Website: " . $subject;
+
+    // Email body
+    $txt = "Name: $name\r\n";
+    $txt .= "Email: $email\r\n";
+    $txt .= "Phone: $phone\r\n";
+    $txt .= "Message:\r\n$message";
+
+    // Headers
+    $headers = "From: noreply@chawlatravels.pk\r\n";
+    $headers .= "Reply-To: $email\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion();
+
+    // Send email
     mail($to, $email_subject, $txt, $headers);
 }
 
-// Redirect after sending
+// Redirect to thank you page
 header("Location: thankyou.html");
 exit();
 ?>
