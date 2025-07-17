@@ -11,7 +11,7 @@ $phone   = isset($_POST['Phone']) ? trim($_POST['Phone']) : '';
 $message = isset($_POST['message']) ? trim($_POST['message']) : '';
 
 if (!empty($email)) {
-    $to = "roshaan@suretrust.com.pk"; // ✅ make sure this is correct
+    $to = "roshaan@suretrust.com.pk"; // ✅ Change to your real working email
     $email_subject = "Mail From Website: " . $subject;
 
     // Email body
@@ -20,16 +20,16 @@ if (!empty($email)) {
     $txt .= "Phone: $phone\r\n";
     $txt .= "Message:\r\n$message";
 
-    // Headers
-    $headers = "From: noreply@chawlatravels.pk\r\n";
+    // Email headers
+    $headers = "From: contact@chawlatravels.pk\r\n";
     $headers .= "Reply-To: $email\r\n";
     $headers .= "X-Mailer: PHP/" . phpversion();
 
-    // Send email
+    // Send the email
     mail($to, $email_subject, $txt, $headers);
 }
 
 // Redirect to thank you page
-header("Location: thankyou.html");
+header("Location: /thankyou.html");
 exit();
 ?>
